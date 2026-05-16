@@ -1,0 +1,59 @@
+use csv;
+use serde::{Deserialize, Serialize};
+use std::error::Error;
+
+#[derive(Serialize, Deserialize)]
+struct Paragraph {
+    name: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Article {
+    article: String,
+    author: String,
+    paragraph: Vec<Paragraph>,
+}
+
+fn main() {
+    if let Err(e) = read_from_file("./agreement.csv") {
+        eprintln!("{}", e);
+    }
+
+    let json = r#"
+    {
+    "article":"how to learn rust",
+    "author":"hrishik",
+    "paragraph":[
+    {
+    "name":"one"
+    },
+    {
+    "name":"two"
+    }
+    ]
+    }
+    "#;
+
+    let parsed: Article = read_json_typed(json);
+
+    println!(
+        "\n\n The name of first paragraph is :{}",
+        parsed.paragraph[0].name
+    );
+}
+
+fn read_json_typed(raw_json: &str) -> Article {
+    serde_json::from_str(raw_json).unwrap()
+}
+
+fn read_from_file(path: &str) -> Result<(), Box<dyn Error>> {
+    let mut reader = csv::Reader::from_path(path)?;
+
+    for result in reader.records() {
+        let record = result?;
+
+        println!("{:?}", record);
+    }
+
+    Ok(())
+}
