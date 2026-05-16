@@ -19,6 +19,23 @@ fn main() {
         eprintln!("{}", e);
     }
 
+    let new_article: Article = Article {
+        article: String::from("How to write rust"),
+        author: String::from("shaji"),
+        paragraph: vec![
+            Paragraph {
+                name: String::from("macro"),
+            },
+            Paragraph {
+                name: String::from("micro"),
+            },
+        ],
+    };
+
+    let new_json = serde_json::to_string(&new_article).unwrap();
+
+    println!("The created json is {:?}", new_json);
+
     let json = r#"
     {
     "article":"how to learn rust",
