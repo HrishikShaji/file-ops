@@ -1,6 +1,9 @@
 use csv;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::io::Read;
+
+mod api;
 
 #[derive(Serialize, Deserialize)]
 struct Paragraph {
@@ -15,6 +18,8 @@ struct Article {
 }
 
 fn main() {
+    api::fetch_api();
+
     if let Err(e) = read_from_file("./agreement.csv") {
         eprintln!("{}", e);
     }
