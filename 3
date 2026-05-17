@@ -1,8 +1,8 @@
 use actix_web::{App, HttpServer, Responder, get, web::Path};
 use rhai::Engine;
 
-#[get("/multiply/{num1}/{num2}")]
-async fn multiply(path: Path<(i64, i64)>) -> impl Responder {
+#[get("/multiple/{num1}/num2")]
+async fn multiple(path: Path<(i64, i64)>) -> impl Responder {
     let (num1, num2) = path.into_inner();
 
     let mut engine = Engine::new();
@@ -15,7 +15,7 @@ async fn multiply(path: Path<(i64, i64)>) -> impl Responder {
     format!("{result}")
 }
 
-#[get("/add/{num1}/{num2}")]
+#[get("/add/{num1}/num2")]
 async fn add(path: Path<(i64, i64)>) -> impl Responder {
     let (num1, num2) = path.into_inner();
 
@@ -28,13 +28,11 @@ async fn add(path: Path<(i64, i64)>) -> impl Responder {
 
     format!("{result}")
 }
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("Server running at http://127.0.0.1:8080");
-
-    HttpServer::new(|| App::new().service(add).service(multiply))
-        .bind(("127.0.0.1", 8080))?
+    HttpServer::new(|| App::new().service(multiply).service(Add))
+        .bind("127.0.0.1", 8080)
+        .unwrap()
         .run()
         .await
 }
