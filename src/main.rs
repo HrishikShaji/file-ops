@@ -27,59 +27,18 @@ fn main() {
             println!("write <file> <content>");
             println!("read <file>");
             println!("delete <file>");
+            println!("file_type <file>");
             continue;
         }
 
         let parts: Vec<&str> = input.splitn(3, ' ').collect();
 
         match parts[0] {
-            "create" => {
-                if parts.len() < 2 {
-                    println!("Usage: create <file>");
-                    continue;
-                }
-
-                match file_ops::create_file(parts[1]) {
-                    Ok(_) => println!("File created"),
-                    Err(e) => println!("Error: {}", e),
-                }
-            }
-
-            "write" => {
-                if parts.len() < 3 {
-                    println!("Usage: write <file> <content>");
-                    continue;
-                }
-
-                match file_ops::write_file(parts[1], parts[2]) {
-                    Ok(_) => println!("Written successfully"),
-                    Err(e) => println!("Error: {}", e),
-                }
-            }
-
-            "read" => {
-                if parts.len() < 2 {
-                    println!("Usage: read <file>");
-                    continue;
-                }
-
-                match file_ops::read_file(parts[1]) {
-                    Ok(content) => println!("{}", content),
-                    Err(e) => println!("Error: {}", e),
-                }
-            }
-
-            "delete" => {
-                if parts.len() < 2 {
-                    println!("Usage: delete <file>");
-                    continue;
-                }
-
-                match file_ops::delete_file(parts[1]) {
-                    Ok(_) => println!("Deleted"),
-                    Err(e) => println!("Error: {}", e),
-                }
-            }
+            "create" => file_ops::create_file(parts),
+            "write" => file_ops::write_file(parts),
+            "read" => file_ops::read_file(parts),
+            "delete" => file_ops::delete_file(parts),
+            "file_type" => file_ops::get_file_type(parts),
 
             _ => {
                 println!("Unknown command");
