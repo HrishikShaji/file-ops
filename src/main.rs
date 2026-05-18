@@ -1,40 +1,91 @@
-use actix_web::{App, HttpServer, Responder, get, web::Path};
-use rhai::Engine;
+mod file_ops;
 
-#[get("/multiply/{num1}/{num2}")]
-async fn multiply(path: Path<(i64, i64)>) -> impl Responder {
-    let (num1, num2) = path.into_inner();
+use std::io::{self, Write};
 
-    let mut engine = Engine::new();
+fn main() {
+    println!("Simple Rust File CLI");
+    println!("Type 'help' for commands");
+    println!("Type 'exit' to quit");
 
-    engine.register_fn("num1", move || num1);
-    engine.register_fn("num2", move || num2);
+    loop {
+        print!("> ");
+        io::stdout().flush().unwrap();
 
-    let result = engine.eval_file::<i64>("src/multiply.rhai".into()).unwrap();
+        let mut input = String::new();
 
-    format!("{result}")
-}
+        io::stdin().read_line(&mut input).expect("Failed to read");
 
-#[get("/add/{num1}/{num2}")]
-async fn add(path: Path<(i64, i64)>) -> impl Responder {
-    let (num1, num2) = path.into_inner();
+        let input = input.trim();
 
-    let mut engine = Engine::new();
+        if input == "exit" {
+            break;
+        }
 
-    engine.register_fn("num1", move || num1);
-    engine.register_fn("num2", move || num2);
+        if input == "help" {
+            println!("Commands:");
+            println!("create <file>");
+            println!("write <file> <content>");
+            println!("read <file>");
+            println!("delete <file>");
+            continue;
+        }
 
-    let result = engine.eval_file::<i64>("src/add.rhai".into()).unwrap();
+        let parts: Vec<&str> = input.splitn(3, ' ').collect();
 
-    format!("{result}")
-}
+        match parts[0] {
+            "create" => {
+                if parts.len() < 2 {
+                    println!("Usage: create <file>");
+                    continue;
+                }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    println!("Server running at http://127.0.0.1:8080");
+                match file_ops::create_file(parts[1]) {
+                    Ok(_) => println!("File created"),
+                    Err(e) => println!("Error: {}", e),
+                }
+            }
 
-    HttpServer::new(|| App::new().service(add).service(multiply))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+            "write" => {
+                if parts.len() < 3 {
+                    println!("Usage: write <file> <content>");
+                    continue;
+                }
+
+                match file_ops::write_file(parts[1], parts[2]) {
+                    Ok(_) => println!("Written successfully"),
+                    Err(e) => println!("Error: {}", e),
+                }
+            }
+
+            "read" => {
+                if parts.len() < 2 {
+                    println!("Usage: read <file>");
+                    continue;
+                }
+
+                match file_ops::read_file(parts[1]) {
+                    Ok(content) => println!("{}", content),
+                    Err(e) => println!("Error: {}", e),
+                }
+            }
+
+            "delete" => {
+                if parts.len() < 2 {
+                    println!("Usage: delete <file>");
+                    continue;
+                }
+
+                match file_ops::delete_file(parts[1]) {
+                    Ok(_) => println!("Deleted"),
+                    Err(e) => println!("Error: {}", e),
+                }
+            }
+
+            _ => {
+                println!("Unknown command");
+            }
+        }
+    }
+
+    println!("Goodbye!");
 }
