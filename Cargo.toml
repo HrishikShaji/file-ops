@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+zip = "8.6.0"
+flate2 = "1.0.24"
 actix-web = "4.13.0"
 anyhow = "1.0.102"
 csv = "1.4.0"

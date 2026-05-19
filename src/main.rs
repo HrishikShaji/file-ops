@@ -28,6 +28,10 @@ fn main() {
             println!("read <file>");
             println!("delete <file>");
             println!("file_type <file>");
+            println!("create_directory <directory>");
+            println!("read_entries <path>");
+            println!("compress_file <source> <target>");
+            println!("decompress_file <source> <target>");
             continue;
         }
 
@@ -39,6 +43,10 @@ fn main() {
             "read" => file_ops::read_file(parts),
             "delete" => file_ops::delete_file(parts),
             "file_type" => file_ops::get_file_type(parts),
+            "create_directory" => file_ops::create_directory(parts),
+            "read_entries" => file_ops::read_entries(parts),
+            "compress_file" => file_ops::compress_file(parts),
+            "decompress_file" => file_ops::decompress_file(parts),
 
             _ => {
                 println!("Unknown command");
